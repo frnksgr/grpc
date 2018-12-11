@@ -15,13 +15,15 @@ all: server client
 
 api/api.pb.go: api/api.proto
 	@protoc -I api/ \
+		-I vendor/ \
 		-I${GOPATH}/src \
-		-I${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+		-I${GOPATH}/src/<c \
 		--go_out=plugins=grpc:api \
 		api/api.proto
 
 api/api.pb.gw.go: api/api.proto
 	@protoc -I api/ \
+		-I vendor/ \
 		-I${GOPATH}/src \
 		-I${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
 		--grpc-gateway_out=logtostderr=true:api \
@@ -29,6 +31,7 @@ api/api.pb.gw.go: api/api.proto
 
 api/api.swagger.json: api/api.proto
 	@protoc -I api/ \
+		-I vendor/ \
 		-I${GOPATH}/src \
 		-I${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
 		--swagger_out=logtostderr=true:api \
@@ -37,7 +40,7 @@ api/api.swagger.json: api/api.proto
 api: api/api.pb.go api/api.pb.gw.go api/api.swagger.json ## Auto-generate grpc go sources
 
 dep: ## Get the dependencies
-	@go get -v -d ./api ./client ./server
+	@go get -v -d -u ./api ./client ./server
 
 server: dep api cert ## Build the binary file for server
 	@go build -i -v -o $(SERVER_OUT) $(SERVER_PKG_BUILD)
